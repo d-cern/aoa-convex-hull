@@ -1,6 +1,6 @@
 import os
-from Point import Point
-from Line import Line
+from point import Point
+from line import Line
 
 # !!!! must return the INDICES (as they are in the input file) of the convex hull points !!!! #
 # TODO: change return values to indices
@@ -29,39 +29,44 @@ def ComputeConvexHull(points):
 #     bLeft = pointsB[0]
 #     T = Line(aRight, bLeft)
 
+def main():
 
-inputFileDir = '../data/input.csv'
+    inputFileDir = '../data/input.csv'
 
-# error check file path
-if not os.path.exists(inputFileDir):
-    print('Cannot find ' + inputFileDir + '.')
-    quit()
+    # error check file path
+    if not os.path.exists(inputFileDir):
+        print('Cannot find ' + inputFileDir + '.')
+        quit()
 
-# open input file
-file = open(inputFileDir, 'r')
+    # open input file
+    file = open(inputFileDir, 'r')
 
-points = []
+    points = []
+    i = 0
 
-# read each line of the input file and store fields in respective attribute of Point
-line = file.readline()
-while line:
-    coordinates = line.split(',')
-    points.append(Point( float(coordinates[0]), float(coordinates[1]) ))
+    # read each line of the input file and store fields in respective attribute of Point
     line = file.readline()
+    while line:
+        coordinates = line.split(',')
+        points.append(Point( float(coordinates[0]), float(coordinates[1]), int(++i) ))
+        line = file.readline()
 
-file.close()
+    file.close()
 
-# split points list in half
-# TODO: split should occur inside ComputeConvexHull()
-# pointsA = points[ len(points) // 2: ]
-# pointsB = points[ :len(points) // 2 ]
+    # split points list in half
+    # TODO: split should occur inside ComputeConvexHull()
+    # pointsA = points[ len(points) // 2: ]
+    # pointsB = points[ :len(points) // 2 ]
 
-# compute convex hull points
-# convexHullPoints = ComputeConvexHull(pointsA, pointsB)
+    # compute convex hull points
+    # convexHullPoints = ComputeConvexHull(pointsA, pointsB)
 
-# # debugging: print all points
-# for i in points:
-#     print(f'{i.x} {i.y}')
-#
-# # print function of line between two points
-# z = Line(points[0], points[34])
+    # debugging: print all points
+    for i in points:
+        print(f'{i.x} {i.y}')
+    #
+    # # print function of line between two points
+    # z = Line(points[0], points[34])
+
+
+main()

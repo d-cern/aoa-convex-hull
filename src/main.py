@@ -4,12 +4,12 @@ from line import Line
 
 # !!!! must return the INDICES (as they are in the input file) of the convex hull points !!!! #
 # TODO: change return values to indices
-def ComputeConvexHull(points):
+def compute_convex_hull(points):
     # base cases: len(points) == 2 or 3
     if len(points) == 2:
         return points
     elif len(points) == 3:
-        if points[3].IsAboveLine( Line(points[0], points[1])):
+        if points[3].is_above_line( Line(points[0], points[1])):
             return points
         
 
@@ -24,22 +24,22 @@ def ComputeConvexHull(points):
 #     #
 #     #     while(T is not lower tangent to B):
 #     #         b = b + 1
-#     # rightmost of pointsA
-#     aRight = pointsA[len(pointsA) - 1]
-#     bLeft = pointsB[0]
+#     # rightmost of points_a
+#     aRight = points_a[len(points_a) - 1]
+#     bLeft = points_b[0]
 #     T = Line(aRight, bLeft)
 
 def main():
 
-    inputFileDir = '../data/input.csv'
+    input_file_dir = '../data/input.csv'
 
     # error check file path
-    if not os.path.exists(inputFileDir):
-        print('Cannot find ' + inputFileDir + '.')
+    if not os.path.exists(input_file_dir):
+        print('Cannot find ' + input_file_dir + '.')
         quit()
 
     # open input file
-    file = open(inputFileDir, 'r')
+    file = open(input_file_dir, 'r')
 
     points = []
     i = 0
@@ -55,11 +55,11 @@ def main():
 
     # split points list in half
     # TODO: split should occur inside ComputeConvexHull()
-    # pointsA = points[ len(points) // 2: ]
-    # pointsB = points[ :len(points) // 2 ]
+    # points_a = points[ len(points) // 2: ]
+    # points_b = points[ :len(points) // 2 ]
 
     # compute convex hull points
-    # convexHullPoints = ComputeConvexHull(pointsA, pointsB)
+    # convexHullPoints = ComputeConvexHull(points_a, points_b)
 
     # debugging: print all points
     for i in points:

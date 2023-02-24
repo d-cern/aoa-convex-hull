@@ -2,16 +2,45 @@ import os
 from point import Point
 from line import Line
 
-# !!!! must return the INDICES (as they are in the input file) of the convex hull points !!!! #
-# TODO: change return values to indices
+
 def compute_convex_hull(points):
-    # base cases: len(points) == 2 or 3
+    # base cases
+    # -------------------
     if len(points) == 2:
         return points
     elif len(points) == 3:
-        if points[3].is_above_line( Line(points[0], points[1])):
+        if points[2].is_above_line( Line(points[0], points[1])):
             return points
-        
+        else:
+            return [0, 2, 1]
+
+    # divide
+    # -------------------
+    a_cvx_hull = compute_convex_hull( points[len(points) // 2:] )
+    b_cvx_hull = compute_convex_hull( points[:len(points) // 2] )
+
+    # combine
+    # -------------------
+    # rightmost point of a_cvx_hull
+    a_right = len(a_cvx_hull) - 1
+    # leftmost point of b_cvx_hull
+    b_left = 0
+
+    line_T = Line(a_right, b_left)
+
+    # lower tangent
+    while not line_T.is_lower_tangent2(a_cvx_hull, b_cvx_hull):
+        while not line_T.is_lower_tangent(a_cvx_hull):
+            a_right -= 1        # step in clockwise direction
+
+        while not line_T.is_lower_tangent(b_cvx_hull):
+            b_left += 1         # step in counter-clockwise direction
+
+    # upper tangent     # TODO: finish compute uppertan
+    # rightmost point of a_cvx_hull
+    a_right = len(a_cvx_hull) - 1
+    # leftmost point of b_cvx_hull
+    b_left = 0
 
 
 # finding lower tangent
@@ -24,22 +53,20 @@ def compute_convex_hull(points):
 #     #
 #     #     while(T is not lower tangent to B):
 #     #         b = b + 1
-#     # rightmost of points_a
-#     aRight = points_a[len(points_a) - 1]
-#     bLeft = points_b[0]
-#     T = Line(aRight, bLeft)
+#     # rightmost of a_points
+
 
 def main():
 
-    input_file_dir = '../data/input.csv'
+    INPUT_FILE_DIR = '../data/input.csv'
 
     # error check file path
-    if not os.path.exists(input_file_dir):
-        print('Cannot find ' + input_file_dir + '.')
+    if not os.path.exists(INPUT_FILE_DIR):
+        print('Cannot find ' + INPUT_FILE_DIR + '.')
         quit()
 
     # open input file
-    file = open(input_file_dir, 'r')
+    file = open(INPUT_FILE_DIR, 'r')
 
     points = []
     i = 0
@@ -53,13 +80,8 @@ def main():
 
     file.close()
 
-    # split points list in half
-    # TODO: split should occur inside ComputeConvexHull()
-    # points_a = points[ len(points) // 2: ]
-    # points_b = points[ :len(points) // 2 ]
-
     # compute convex hull points
-    # convexHullPoints = ComputeConvexHull(points_a, points_b)
+    # convexHullPoints = ComputeConvexHull(a_points, b_points)
 
     # debugging: print all points
     for i in points:

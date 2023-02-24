@@ -19,41 +19,59 @@ def compute_convex_hull(points):
     a_cvx_hull = compute_convex_hull( points[len(points) // 2:] )
     b_cvx_hull = compute_convex_hull( points[:len(points) // 2] )
 
+    # copy a/b_cvx_hull
+    cpy_a_cvx_hull = a_cvx_hull
+    cpy_b_cvx_hull = b_cvx_hull
+
     # combine
     # -------------------
     # rightmost point of a_cvx_hull
-    a_right = len(a_cvx_hull) - 1
-    # leftmost point of b_cvx_hull
-    b_left = 0
+    a_len = len(a_cvx_hull)
+    a_lower_right = a_len - 1
+    # side_a[a_lower_right]
 
-    line_T = Line(a_right, b_left)
+    # leftmost point of b_cvx_hull
+    b_len = len(b_cvx_hull)
+    b_lower_left = 0
+
+    line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
 
     # lower tangent
     while not line_T.is_lower_tangent2(a_cvx_hull, b_cvx_hull):
         while not line_T.is_lower_tangent(a_cvx_hull):
-            a_right -= 1        # step in clockwise direction
+            a_lower_right -= 1        # step in clockwise direction
+            line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
+
+            # loop around to end of the end list (avoid out of bounds error)
+            if a_lower_right == 0:
+                a_lower_right = a_len - 1
 
         while not line_T.is_lower_tangent(b_cvx_hull):
-            b_left += 1         # step in counter-clockwise direction
-
-    # upper tangent     # TODO: finish compute uppertan
-    # rightmost point of a_cvx_hull
-    a_right = len(a_cvx_hull) - 1
-    # leftmost point of b_cvx_hull
-    b_left = 0
+            b_lower_left += 1         # step in counter-clockwise direction
+            line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
+            if b_lower_left == b_len:
+                b_lower_left = 0
 
 
-# finding lower tangent
-#     # a = rightmost point of A
-#     # b = leftmost point of B
-#     #
-#     # while(T=ab is not lower tangent to both convex hulls):
-#     #     while(T is not lower tangent to A):
-#     #         a = a - 1
-#     #
-#     #     while(T is not lower tangent to B):
-#     #         b = b + 1
-#     # rightmost of a_points
+    # upper tangent     # TODO: finish compute upper tan
+    a_upper_right = len(a_cvx_hull) - 1     # rightmost point of a_cvx_hull
+    b_upper_left = 0      # leftmost point of b_cvx_hull
+
+    line_T = Line(a_cvx_hull[a_upper_right], b_cvx_hull[b_upper_left])
+
+    while not line_T.is_upper_tangent2(a_cvx_hull, b_cvx_hull):
+        while not line_T.is_upper_tangent(a_cvx_hull):
+            a_upper_right += 1        # step in counter-clockwise direction
+            line_T = Line(a_cvx_hull[a_upper_right], b_cvx_hull[b_upper_left])
+            if a_upper_right == a_len:
+                a_upper_right = 0
+
+        while not line_T.is_upper_tangent(b_cvx_hull):
+            b_upper_left -= 1         # step in clockwise direction
+            line_T = Line(a_cvx_hull[a_upper_right], b_cvx_hull[b_upper_left])
+            if b_upper_left == 0:
+                b_upper_left = b_len
+
 
 
 def main():

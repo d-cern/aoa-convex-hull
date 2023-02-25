@@ -9,15 +9,19 @@ def compute_convex_hull(points):
     if len(points) == 2:
         return points
     elif len(points) == 3:
+        #print(f'points0 = {points[0].y_coord}')
         if points[2].is_above_line( Line(points[0], points[1])):
             return points
         else:
-            return [0, 2, 1]
+            return [points[0], points[2], points[1]]
 
     # divide
     # -------------------
+    print(f'len = {len(points)}')
     a_cvx_hull = compute_convex_hull( points[len(points) // 2:] )
     b_cvx_hull = compute_convex_hull( points[:len(points) // 2] )
+
+    # print(f'len = {len(a_cvx_hull)}')
 
     # copy a/b_cvx_hull
     cpy_a_cvx_hull = a_cvx_hull
@@ -25,54 +29,126 @@ def compute_convex_hull(points):
 
     # combine
     # -------------------
+    not_lower_tangent = []
+
     # rightmost point of a_cvx_hull
-    a_len = len(a_cvx_hull)
-    a_lower_right = a_len - 1
-    # side_a[a_lower_right]
+    a_lower_right = len(a_cvx_hull) - 1
 
     # leftmost point of b_cvx_hull
-    b_len = len(b_cvx_hull)
     b_lower_left = 0
 
-    line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
+    print('acvxhull________________')
+    print(f'{type(a_cvx_hull[a_lower_right])} ==== {a_cvx_hull[a_lower_right]}')
 
-    # lower tangent
-    while not line_T.is_lower_tangent2(a_cvx_hull, b_cvx_hull):
+    line_T = Line( a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left] )
+    a_lower_bool = False
+    b_lower_bool = False
+
+    # lower tangent | line_T.is_lower_tangent2(a_cvx_hull, b_cvx_hull):
+    while not (a_lower_bool and b_lower_bool):
         while not line_T.is_lower_tangent(a_cvx_hull):
-            a_lower_right -= 1        # step in clockwise direction
+            # a_cvx_hull.remove(a_lower_right)
+            not_lower_tangent.append(a_cvx_hull.pop(a_lower_right))
+
+            if len(a_cvx_hull) == 0:
+                break
+
+            a_lower_right -= 1  # step in clockwise direction
+            # loop around to end of the list (avoid out of bounds error)
+            if a_lower_right < 0:
+                a_lower_right = len(a_cvx_hull) - 1
+
             line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
 
-            # loop around to end of the end list (avoid out of bounds error)
-            if a_lower_right == 0:
-                a_lower_right = a_len - 1
+        a_lower_bool = True
 
         while not line_T.is_lower_tangent(b_cvx_hull):
-            b_lower_left += 1         # step in counter-clockwise direction
-            line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
-            if b_lower_left == b_len:
+            # b_cvx_hull.remove(b_lower_left)
+            not_lower_tangent.append(a_cvx_hull.pop(b_lower_left))
+
+            if len(b_cvx_hull) == 0:
+                break
+
+            b_lower_left += 1  # step in counter-clockwise direction
+            # loop around to start of the list (avoid out of bounds error)
+            if b_lower_left >= len(cpy_b_cvx_hull):
                 b_lower_left = 0
+
+            line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
+
+        b_lower_bool = True
 
 
     # upper tangent     # TODO: finish compute upper tan
-    a_upper_right = len(a_cvx_hull) - 1     # rightmost point of a_cvx_hull
-    b_upper_left = 0      # leftmost point of b_cvx_hull
+    not_upper_tangent = []
 
-    line_T = Line(a_cvx_hull[a_upper_right], b_cvx_hull[b_upper_left])
+    a_upper_right = len(cpy_a_cvx_hull) - 1     # rightmost point of cpy_a_cvx_hull
+    b_upper_left = 0      # leftmost point of cpy_b_cvx_hull
 
-    while not line_T.is_upper_tangent2(a_cvx_hull, b_cvx_hull):
-        while not line_T.is_upper_tangent(a_cvx_hull):
-            a_upper_right += 1        # step in counter-clockwise direction
-            line_T = Line(a_cvx_hull[a_upper_right], b_cvx_hull[b_upper_left])
-            if a_upper_right == a_len:
+    line_T = Line(cpy_a_cvx_hull[a_upper_right], cpy_b_cvx_hull[b_upper_left])
+    a_upper_bool = False
+    b_upper_bool = False
+    # x = 0
+    # y = 10
+    # line_T.is_upper_tangent2(cpy_a_cvx_hull, cpy_b_cvx_hull):
+    while not (a_upper_bool and b_upper_bool):
+        # x += 1
+        # print(x)
+        while not line_T.is_upper_tangent(cpy_a_cvx_hull):
+            # cpy_a_cvx_hull.remove(a_upper_right)
+            not_upper_tangent.append(cpy_a_cvx_hull.pop(a_upper_right))
+
+            if len(cpy_a_cvx_hull) == 0:
+                break
+
+            a_upper_right += 1  # step in counter-clockwise direction
+            # loop around to start of the list (avoid out of bounds error)
+            if a_upper_right >= len(cpy_a_cvx_hull):
                 a_upper_right = 0
 
-        while not line_T.is_upper_tangent(b_cvx_hull):
+            line_T = Line(cpy_a_cvx_hull[a_upper_right], cpy_b_cvx_hull[b_upper_left])
+
+        a_upper_bool = True
+
+        while not line_T.is_upper_tangent(cpy_b_cvx_hull):
+            # cpy_b_cvx_hull.remove(b_upper_left)
+            not_upper_tangent.append(cpy_b_cvx_hull.pop(b_upper_left))
+
+            if len(cpy_b_cvx_hull) == 0:
+                break
+
             b_upper_left -= 1         # step in clockwise direction
-            line_T = Line(a_cvx_hull[a_upper_right], b_cvx_hull[b_upper_left])
-            if b_upper_left == 0:
-                b_upper_left = b_len
+            # loop around to end of the list (avoid out of bounds error)
+            if b_upper_left < 0:
+                b_upper_left = len(cpy_b_cvx_hull) - 1
 
+            line_T = Line(cpy_a_cvx_hull[a_upper_right], cpy_b_cvx_hull[b_upper_left])
 
+        b_upper_bool = True
+
+        # y += 10
+        # print(y)
+
+    # combine
+    #
+    # [ b_upper , a_upper , .. , .. , a_lower , b_lower , .. , .. ]
+
+    i = 0
+    for p in range(0, len(not_lower_tangent)):
+        if not_lower_tangent[p] in cpy_a_cvx_hull and not ( not_lower_tangent[p].idx == cpy_a_cvx_hull[a_upper_right] or not_lower_tangent[p].idx == cpy_b_cvx_hull[b_upper_left] ):
+            cpy_a_cvx_hull.pop(p)
+
+        if not_lower_tangent[p] in cpy_b_cvx_hull and not ( not_lower_tangent[p].idx == cpy_b_cvx_hull[a_upper_right] or not_lower_tangent[p].idx == cpy_b_cvx_hull[b_upper_left] ):
+            cpy_b_cvx_hull.pop(p)
+
+    for p in range(0, len(not_upper_tangent)):
+        if not_upper_tangent[p] in a_cvx_hull and not ( not_upper_tangent[p].idx == a_cvx_hull[a_lower_right] or not_upper_tangent[p].idx == b_cvx_hull[b_lower_left] ):
+            a_cvx_hull.pop(p)
+
+        if not_upper_tangent[p] in b_cvx_hull and not (not_upper_tangent[p].idx == a_cvx_hull[a_lower_right] or not_upper_tangent[p].idx == b_cvx_hull[b_lower_left]):
+            b_cvx_hull.pop(p)
+
+    return a_cvx_hull + b_cvx_hull
 
 def main():
 
@@ -99,11 +175,19 @@ def main():
     file.close()
 
     # compute convex hull points
-    # convexHullPoints = ComputeConvexHull(a_points, b_points)
+    cvx_hull_points = compute_convex_hull(points)
 
-    # debugging: print all points
-    for i in points:
-        print(f'{i.x} {i.y}')
+    print(cvx_hull_points)
+
+    for p in cvx_hull_points:
+        print(p.idx)
+
+    # for p in cvx_hull_points:
+    #     print(p)
+
+    # # debugging: print all points
+    # for i in points:
+    #     print(f'{i.x} {i.y}')
     #
     # # print function of line between two points
     # z = Line(points[0], points[34])

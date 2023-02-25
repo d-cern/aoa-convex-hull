@@ -20,38 +20,40 @@ class Line:
 
         return True
 
-    def is_lower_tangent2(self, a_points, b_points):
-        i = 0
-
-        # If number of points is not equal, then there
-        # can only be a difference of 1 between them.
-        if len(a_points) > len(b_points):
-            for i in range(0, len(b_points)):
-                if not ( a_points[i].is_above_line(self) or b_points[i].is_above_line(self) ):
-                    return False
-            if not a_points[i+1].is_above_line(self):
-                return False
-
-        elif len(a_points) < len(b_points):
-            for i in range(0, len(a_points)):
-                if not ( a_points[i].is_above_line(self) or b_points[i].is_above_line(self) ):
-                    return False
-            if not b_points[i+1].is_above_line(self):
-                return False
-
-        else:
-            for i in range(0, len(a_points)):
-                if not (a_points[i].is_above_line(self) or b_points[i].is_above_line(self)):
-                    return False
-
-        return True
-
     def is_upper_tangent(self, points):
         for p in points:
             if p.is_above_line(self):
                 return False
 
         return True
+
+    # def is_lower_tangent2(self, a_points, b_points):
+    #     i = 0
+    #
+    #     # If number of points is not equal, then there
+    #     # can only be a difference of 1 between them.
+    #     if len(a_points) > len(b_points):
+    #         for i in range(0, len(b_points)):
+    #             if not ( a_points[i].is_above_line(self) or b_points[i].is_above_line(self) ):
+    #                 return False
+    #         if not a_points[i+1].is_above_line(self):
+    #             return False
+    #
+    #     elif len(a_points) < len(b_points):
+    #         for i in range(0, len(a_points)):
+    #             if not ( a_points[i].is_above_line(self) or b_points[i].is_above_line(self) ):
+    #                 return False
+    #         if not b_points[i+1].is_above_line(self):
+    #             return False
+    #
+    #     else:
+    #         for i in range(0, len(a_points)):
+    #             if not (a_points[i].is_above_line(self) or b_points[i].is_above_line(self)):
+    #                 return False
+    #
+    #     return True
+
+
 
     def is_upper_tangent2(self, a_points, b_points):
         i = 0

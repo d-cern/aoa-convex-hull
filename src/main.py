@@ -37,46 +37,43 @@ def compute_convex_hull(points):
     # leftmost point of b_cvx_hull
     b_lower_left = 0
 
-    print('acvxhull________________')
-    print(f'{type(a_cvx_hull[a_lower_right])} ==== {a_cvx_hull[a_lower_right]}')
+    # print('acvxhull________________')
+    # print(f'{type(a_cvx_hull[a_lower_right])} ==== {a_cvx_hull[a_lower_right]}')
 
     line_T = Line( a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left] )
     a_lower_bool = False
     b_lower_bool = False
 
     # lower tangent | line_T.is_lower_tangent2(a_cvx_hull, b_cvx_hull):
-    while not (a_lower_bool and b_lower_bool):
+    while not line_T.is_lower_tangent(a_cvx_hull) and not line_T.is_lower_tangent(b_cvx_hull):
         while not line_T.is_lower_tangent(a_cvx_hull):
             # a_cvx_hull.remove(a_lower_right)
             not_lower_tangent.append(a_cvx_hull.pop(a_lower_right))
+            a_lower_right -= 1  # step in clockwise direction
 
             if len(a_cvx_hull) == 0:
                 break
 
-            a_lower_right -= 1  # step in clockwise direction
             # loop around to end of the list (avoid out of bounds error)
             if a_lower_right < 0:
                 a_lower_right = len(a_cvx_hull) - 1
 
             line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
 
-        a_lower_bool = True
 
         while not line_T.is_lower_tangent(b_cvx_hull):
             # b_cvx_hull.remove(b_lower_left)
-            not_lower_tangent.append(a_cvx_hull.pop(b_lower_left))
+            not_lower_tangent.append(b_cvx_hull.pop(b_lower_left))
+            b_lower_left += 1  # step in counter-clockwise direction
 
             if len(b_cvx_hull) == 0:
                 break
 
-            b_lower_left += 1  # step in counter-clockwise direction
             # loop around to start of the list (avoid out of bounds error)
-            if b_lower_left >= len(cpy_b_cvx_hull):
+            if b_lower_left >= len(b_cvx_hull):
                 b_lower_left = 0
 
             line_T = Line(a_cvx_hull[a_lower_right], b_cvx_hull[b_lower_left])
-
-        b_lower_bool = True
 
 
     # upper tangent     # TODO: finish compute upper tan
@@ -88,43 +85,38 @@ def compute_convex_hull(points):
     line_T = Line(cpy_a_cvx_hull[a_upper_right], cpy_b_cvx_hull[b_upper_left])
     a_upper_bool = False
     b_upper_bool = False
-    # x = 0
-    # y = 10
+
     # line_T.is_upper_tangent2(cpy_a_cvx_hull, cpy_b_cvx_hull):
-    while not (a_upper_bool and b_upper_bool):
-        # x += 1
-        # print(x)
+    while not line_T.is_upper_tangent(cpy_a_cvx_hull) and not line_T.is_upper_tangent(cpy_b_cvx_hull):
         while not line_T.is_upper_tangent(cpy_a_cvx_hull):
             # cpy_a_cvx_hull.remove(a_upper_right)
             not_upper_tangent.append(cpy_a_cvx_hull.pop(a_upper_right))
+            a_upper_right += 1  # step in counter-clockwise direction
 
             if len(cpy_a_cvx_hull) == 0:
                 break
 
-            a_upper_right += 1  # step in counter-clockwise direction
             # loop around to start of the list (avoid out of bounds error)
             if a_upper_right >= len(cpy_a_cvx_hull):
                 a_upper_right = 0
 
             line_T = Line(cpy_a_cvx_hull[a_upper_right], cpy_b_cvx_hull[b_upper_left])
 
-        a_upper_bool = True
 
         while not line_T.is_upper_tangent(cpy_b_cvx_hull):
             # cpy_b_cvx_hull.remove(b_upper_left)
             not_upper_tangent.append(cpy_b_cvx_hull.pop(b_upper_left))
+            b_upper_left -= 1         # step in clockwise direction
 
             if len(cpy_b_cvx_hull) == 0:
                 break
 
-            b_upper_left -= 1         # step in clockwise direction
             # loop around to end of the list (avoid out of bounds error)
             if b_upper_left < 0:
                 b_upper_left = len(cpy_b_cvx_hull) - 1
 
             line_T = Line(cpy_a_cvx_hull[a_upper_right], cpy_b_cvx_hull[b_upper_left])
 
-        b_upper_bool = True
 
         # y += 10
         # print(y)
@@ -169,8 +161,9 @@ def main():
     line = file.readline()
     while line:
         coordinates = line.split(',')
-        points.append(Point( float(coordinates[0]), float(coordinates[1]), int(++i) ))
+        points.append(Point( float(coordinates[0]), float(coordinates[1]), int(i) ))
         line = file.readline()
+        i += 1
 
     file.close()
 
